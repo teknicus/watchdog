@@ -1,0 +1,20 @@
+{
+    "ZONE_ID": "",
+    "CF_TOKEN": "",
+    "crons": {
+        "checkWebsite": {
+            "i": 10000,
+            "pingUrl": "https://vitepress.thomasrob.in",
+            "grace": {
+                "i": 2000,
+                "n": 15
+            }
+        }
+    },
+    "actions":{
+        "updatePagerule":{
+            "id": "",
+            "restoreCheckInterval": 5000
+        }
+    }
+}
