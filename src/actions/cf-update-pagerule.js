@@ -2,6 +2,9 @@ import websiteWatchdog from '../crons/website-watchdog.js'
 import axios from 'axios';
 import config from 'config'
 
+import { logSuccess, logFail } from '../logger/index.js'
+
+
 const zoneId = config.ZONE_ID;
 const ruleId = config.actions.updatePagerule.id;
 const token = config.CF_TOKEN;
@@ -12,15 +15,14 @@ async function fallbackPagerule() {
     await activateFallback();
 
     let restoreCheck = setInterval(async () => {
+
+        console.log("Waiting for restoration of main service")
         axios.get(config.actions.updatePagerule.healthCheckUrl)
             .then(async response => {
                 if (response.status >= 200 && response.status < 300) {
                     clearInterval(restoreCheck)
                     await disableFallback();
                     websiteWatchdog(fallbackPagerule)
-
-
-
                 } else {
                     logFail('appledore', `healthcheck failed`, { status: response.status })
                 }
