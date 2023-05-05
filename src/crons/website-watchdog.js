@@ -1,6 +1,7 @@
 import config from 'config'
 import axios from 'axios'
 import { logSuccess, logFail } from '../logger/index.js'
+import  { updateWebsiteWatchdog } from '../db/pg.js'
 
 const pingUrl = config.crons.checkWebsite.pingUrl
 let checkWebsiteInterval, watchdogAction, watchdogRevert;
@@ -25,13 +26,16 @@ async function checkWebsite() {
             if (response.status >= 200 && response.status < 300) {
                 let latency = Date.now() - startTime;
                 logSuccess('websiteWatchdog', null, { latency })
+                updateWebsiteWatchdog(true, latency)
             } else {
                 logFail('websiteWatchdog', `request failed with status code ${response.status}`, { status: response.status })
+                updateWebsiteWatchdog(false)
                 grace();
             }
         })
         .catch(error => {
             logFail('websiteWatchdog', `Error:`, { status: error?.status })
+            updateWebsiteWatchdog(false)
             grace();
         });
 }
